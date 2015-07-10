@@ -1,0 +1,9 @@
+.idea
+node_modules/
+720/
+bin/
+*.iml
+*.mp4
+*.flac
+*.zip
+ts/
