@@ -1,7 +1,7 @@
-var LeafBox = require('../LeafBox');
-var mvhd = require('./mvhd');
-var trak = require('./trak');
-var mvex = require('./mvex');
+import LeafBox from '../LeafBox';
+import mvhd from './mvhd';
+import trak from './trak';
+import mvex from './mvex';
 
 export default class moov extends LeafBox {
     constructor(media) {

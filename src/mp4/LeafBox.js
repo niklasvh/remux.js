@@ -36,4 +36,8 @@ export default class LeafBox extends Box {
     write() {
         return this.writeAtoms(this.atoms, super.write());
     }
+
+    static read(media, reader, leafLength) {
+        return Box.read(media, reader);
+    }
 }

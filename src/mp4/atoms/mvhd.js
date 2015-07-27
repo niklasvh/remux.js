@@ -1,4 +1,5 @@
-var Box = require('../Box');
+import Box from '../Box';
+import assert from 'assert';
 
 export default class mvhd extends Box {
     constructor(media) {
@@ -18,6 +19,17 @@ export default class mvhd extends Box {
     boxLength() {
         return this.version === 1 ? 120 : 108;
     }
+
+    static read(media, reader, length) {
+        var version = reader.readUint8();
+        var flags = reader.readUint24();
+        assert.equal(version, 0, 'Unsupported box version');
+        media.creationTime = Box.readDate(reader, version);
+        media.modificationTime = Box.readDate(reader, version);
+        media.timeScale = reader.readUint32();
+        media.duration = Box.readVersionLong(reader, version);
+    }
+
     write() {
         var data = super.write();
         data.writeUint8(this.version);

@@ -1,5 +1,4 @@
-var util = require('util');
-var BinaryUtils = require('../BinaryUtils');
+import BinaryUtils from '../BinaryUtils';
 
 class Box extends BinaryUtils {
     constructor(name) {
@@ -11,6 +10,22 @@ class Box extends BinaryUtils {
         return atoms.reduce((len, atom) => len + atom.boxLength(), 8);
     }
 
+    static read(media, reader) {
+        var length = reader.readUint32();
+        var name = reader.readAscii(4);
+        var atom = null;
+        switch (name) {
+            case 'ftyp': atom = require('./atoms/ftyp'); break;
+            case 'moov': atom = require('./atoms/moov'); break;
+            case 'mvhd': atom = require('./atoms/mvhd'); break;
+            default:
+                console.log('Unrecognized box type', name);
+        }
+        if (atom) {
+            return atom.read(media, reader, length);
+        }
+    }
+
     write() {
         var length = this.boxLength();
         var buffer = new ArrayBuffer(length);
@@ -19,6 +34,16 @@ class Box extends BinaryUtils {
         return data
             .writeUint32(length)
             .writeAscii(this.name);
+    }
+
+    static readDate(reader, version) {
+        // TODO
+        var date = Box.readVersionLong(reader, version);
+        return new Date();
+    }
+
+    static readVersionLong(reader, version) {
+        return version === 0 ? reader.readUint32() : reader.readUint64();
     }
 
     writeDate(data, date) {
