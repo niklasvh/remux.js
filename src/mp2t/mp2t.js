@@ -124,33 +124,7 @@ export default class mp2t extends Container {
             } else {
                 assert.fail('Unknown stream type');
             }
-
-/*
-            for (var position = 0; position < a.byteLength; position++) {
-                if (a[position] !== 0x65 || a[position + 1] !== 0x88 || a[position + 2] !== 0x84 || a[position + 3] !== 0x04) {
-                    continue;
-                }
-
-                console.log(position);
-            }
-*/
-
         });
-
-
-
-/*
-        if (tsPacket.payloadUnitStartIndicator) {
-            if (this.pids[tsPacket.packetIdentifier]) {
-
-                tsPacket.parsePES(tsPacket.packetIdentifier);
-            } else {
-                tsPacket.parsePSI();
-            }
-        } */
-
-      //       console.log(this.pids[256].stream.getSequenceParameterSet());
-     //   console.log(this.pids[256].stream);
     }
 
 }
