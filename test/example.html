@@ -3,62 +3,35 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>HTML5 HLS playback</title>
+    <link href='http://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
     <style>
         body, html {
             margin: 0;
             padding: 0;
+            font-family: 'Inconsolata';
         }
         video {
-            width: 80%;
-            margin: 0 auto;
+            width: 60%;
+            margin: 0 20%;
             display: inline-block;
 
         }
-        dd {
-            display: inline-block;
+        fieldset {
+            margin: 20px 0;
         }
-
-        dt {
+        fieldset div {
+            margin-right: 20px;
             display: inline-block;
+            float: left;
         }
         #container {
             margin: 0 auto;
+            font-family: 'Inconsolata';
         }
     </style>
 </head>
 <body>
     <div id="container"></div>
-    <fieldset>
-        <legend>Statistics</legend>
-        <dl>
-            <dd>Bandwidth: </dd>
-            <dt id="bandwidth">0</dt>
-        </dl>
-    </fieldset>
-    <script src="/js/hls.js"></script>
-    <script>
-        var video = document.createElement('video');
-        video.autoplay = true;
-        video.controls = true;
-
-        video.muted = true;
-        var playlist = '/hls/big_buck_bunny/playlist.m3u8';
-        var source1 = document.createElement('source');
-        source1.src = playlist;
-        var source2 = document.createElement('source');
-        var hls = new HLSSource(playlist, video);
-        source2.src = hls.src;
-        video.addEventListener('error', function(e) {
-            console.log(e);
-        }, false);
-
-        hls.on('bandwidthChange', function(bandwidth) {
-            document.querySelector('#bandwidth').textContent = parseInt(bandwidth / 1024, 10) + ' kbps';
-        });
-
-        video.appendChild(source1);
-        video.appendChild(source2);
-        document.querySelector('#container').appendChild(video);
-    </script>
+    <script src="/js/client.js"></script>
 </body>
 </html>

@@ -6,6 +6,12 @@ var connectBrowserify = require('connect-browserify');
 var port = process.env.PORT || 8081;
 var app = express();
 
+app.get('/js/client.js', connectBrowserify({
+    entry: path.resolve(__dirname, '../src/client.js'),
+    debug: false,
+    watch: true
+}));
+
 app.get('/js/hls.js', connectBrowserify({
     entry: path.resolve(__dirname, '../src/hls.js'),
     debug: false,

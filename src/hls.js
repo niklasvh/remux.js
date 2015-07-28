@@ -30,48 +30,50 @@ function fetch(url, type = 'arraybuffer') {
     });
 }
 
-class HLSSource extends EventEmitter {
-    constructor(playlistUrl, video) {
+export default class HLSSource extends EventEmitter {
+    constructor(playlistUrl, getVideo) {
         super();
-        this.ms = new MediaSource();
         this.buffer = null;
         this.position = 0;
         this.queue = [];
+        this.getVideo = getVideo;
         this.streams = null;
         this.streamId = 0;
         this.fetching = false;
         this.desiredBufferLength = 8;
-        this.video = video;
         this.bandwidth = 0;
         this.requestedSegments = [];
+        this.originalSize = 0;
+        this.remuxedSize = 0;
+        this.ms = this.createMediaSource(playlistUrl);
+        this.on('bandwidthChange', (bandwidth) => {
+            this.streamId = 0;
+            (this.streams || []).some((stream, id) => {
+                if (stream.bandwidth < bandwidth) {
+                    this.streamId = id;
+                } else {
+                    return true;
+                }
+            });
+        });
+        this.src = window.URL.createObjectURL(this.ms);
+    }
 
-        this.ms.addEventListener('sourceopen', () => {
+    createMediaSource(playlistUrl) {
+        const ms = new MediaSource();
+        ms.addEventListener('sourceopen', () => {
             HLSSource.getPlaylists(playlistUrl).then(playlists => {
                 this.streams = playlists;
                 return this.getNextChunk();
             }).then(container => {
-                console.log(container);
                 container.duration = this.getCurrentPlaylist().playlist.attributes.reduce((duration, segment) => duration + segment.duration, 0) * container.timeScale;
-                this.buffer = this.ms.addSourceBuffer(container.getType());
-
-                setInterval(() => {
+                this.buffer = ms.addSourceBuffer(container.getType());
+                this._poller = setInterval(() => {
                     var bufferLength = this.getBufferLength();
-                    if (!this.fetching && this.position < this.getCurrentPlaylist().playlist.attributes.length && bufferLength < this.desiredBufferLength) {
+                    if (!this.fetching && this.position < this.getCurrentPlaylist().playlist.attributes.length && (bufferLength < this.desiredBufferLength || this.getVideo().paused) ) {
                         this.getNextChunk().then(container => this.appendChunk(container.writeBuffer()));
                     }
                 }, 100);
-
-                this.on('bandwidthChange', (bandwidth) => {
-                    this.streamId = 0;
-                    this.streams.some((stream, id) => {
-                        if (stream.bandwidth < bandwidth) {
-                            this.streamId = id;
-                        } else {
-                            return true;
-                        }
-                    });
-                });
-
                 this.buffer.addEventListener('update', () => {
                     if (this.queue.length) {
                         this.buffer.appendBuffer(this.queue.shift());
@@ -81,8 +83,7 @@ class HLSSource extends EventEmitter {
                 this.appendChunk(container.writeBuffer());
             });
         });
-
-        this.src = window.URL.createObjectURL(this.ms);
+        return ms;
     }
 
     static getPlaylists(playlistUrl) {
@@ -102,15 +103,36 @@ class HLSSource extends EventEmitter {
         });
     }
 
+    clearBuffer(playlistUrl) {
+        this.position = 0;
+        this.queue = [];
+        this.requestedSegments = [];
+        this.originalSize = 0;
+        this.remuxedSize = 0;
+        this.streams = null;
+        this.streamId = 0;
+        this.fetching = false;
+        this.ms.removeSourceBuffer(this.buffer);
+        this.buffer = null;
+        clearInterval(this._poller);
+        this.ms = this.createMediaSource(playlistUrl);
+        this.src = window.URL.createObjectURL(this.ms);
+        return this.src;
+    }
+
     getBufferLength() {
-        return this.buffer && this.buffer.buffered.length ? this.buffer.buffered.end(0) - video.currentTime : 0;
+        return this.buffer && this.buffer.buffered.length ? this.buffer.buffered.end(0) - this.getVideo().currentTime : 0;
     }
 
     appendChunk(chunk) {
-        if (this.buffer.updating) {
-            this.queue.push(chunk);
-        } else {
-            this.buffer.appendBuffer(chunk);
+        if (this.buffer) {
+            if (this.buffer.updating) {
+                this.queue.push(chunk);
+            } else {
+                this.remuxedSize += chunk.byteLength;
+                this.buffer.appendBuffer(chunk);
+                this.emit('appendBuffer');
+            }
         }
     }
 
@@ -128,15 +150,14 @@ class HLSSource extends EventEmitter {
             resolution: stream.resolution,
             duration: segment.duration
         });
+        this.emit('requestsegment');
 
         return fetch(stream.path + segment.value).tap(chunk => {
             var end = Date.now();
             this.bandwidth = (8 * chunk.byteLength) / ((end - start) / 1000);
             this.emit('bandwidthChange', this.bandwidth);
-            this.fetching = false
-
-        }).then(demux);
+            this.fetching = false;
+            this.originalSize += chunk.byteLength;
+        }).then(demux).tap(container => this.emit('demux', container));
     }
 }
-
-window.HLSSource = HLSSource;
