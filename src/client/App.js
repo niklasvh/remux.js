@@ -18,7 +18,7 @@ export default class App extends React.Component {
         };
     }
     componentDidMount() {
-        var playlist = '/hls/caminandes/playlist.m3u8';
+        var playlist = '/hls/big_buck_bunny/playlist.m3u8';
 
         var hls = new HLSSource(playlist, () => {
             return this.refs.video;
@@ -76,6 +76,9 @@ export default class App extends React.Component {
             return (p < i) ? segment.duration + time : time;
         }, 0);
     }
+    qualityChange() {
+        this.state.hls.setQuality(this.refs.quality.selectedIndex - 1);
+    }
     clearBuffer(url) {
         return e => {
             e.preventDefault();
@@ -93,11 +96,19 @@ export default class App extends React.Component {
     render() {
         return (
             <div>
-                {this.state.updating ? null : <video autoPlay controls muted ref='video'>
+                {this.state.updating ? null : <video autoPlay controls ref='video'>
                     {this.state.tracks.map(track => <source key={track} src={track} />)}
                 </video>}
-                <button onClick={this.clearBuffer('/hls/big_buck_bunny/playlist.m3u8').bind(this)}>Load big buck bunny</button>
-                <button onClick={this.clearBuffer('/hls/caminandes/playlist.m3u8').bind(this)}>Load llama drama</button>
+                <button onClick={this.clearBuffer('/hls/big_buck_bunny/playlist.m3u8').bind(this)}>Load big buck bunny trailer</button>
+                <button onClick={this.clearBuffer('/hls/sintel/playlist.m3u8').bind(this)}>Load sintel trailer</button>
+                Quality:
+                <select onChange={this.qualityChange.bind(this)} ref="quality">
+                    <option>Auto</option>
+                    <option>480x270</option>
+                    <option>640x360</option>
+                    <option>1280x720</option>
+                    <option>1920x1080</option>
+                </select>
                 <fieldset>
                     <legend>Statistics</legend>
                     {typeof(this.state.audioDecodedByteCount) === 'number' ? <div>{this.state.audioDecodedByteCount + ' audio bytes decoded'}</div> : null}

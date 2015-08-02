@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var fs = require('fs');
+var cors = require('cors');
 var connectBrowserify = require('connect-browserify');
 
 var port = process.env.PORT || 8081;
@@ -17,6 +18,8 @@ app.get('/js/hls.js', connectBrowserify({
     debug: false,
     watch: true
 }));
+
+app.use(cors());
 
 app.use('/hls', express.static(path.resolve(__dirname, '../examples/hls')));
 

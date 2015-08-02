@@ -45,18 +45,26 @@ export default class HLSSource extends EventEmitter {
         this.requestedSegments = [];
         this.originalSize = 0;
         this.remuxedSize = 0;
+        this.qualitySetting = -1;
         this.ms = this.createMediaSource(playlistUrl);
         this.on('bandwidthChange', (bandwidth) => {
-            this.streamId = 0;
-            (this.streams || []).some((stream, id) => {
-                if (stream.bandwidth < bandwidth) {
-                    this.streamId = id;
-                } else {
-                    return true;
-                }
-            });
+            if (this.qualitySetting === -1) {
+                this.streamId = 0;
+                (this.streams || []).some((stream, id) => {
+                    if (stream.bandwidth < bandwidth) {
+                        this.streamId = id;
+                    } else {
+                        return true;
+                    }
+                });
+            }
         });
         this.src = window.URL.createObjectURL(this.ms);
+    }
+
+    setQuality(quality) {
+        this.qualitySetting = quality;
+        this.streamId = quality === -1 ? 0 : quality
     }
 
     createMediaSource(playlistUrl) {

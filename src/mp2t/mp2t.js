@@ -103,7 +103,10 @@ export default class mp2t extends Container {
                 }
                 return size + sample.size;
             }, 0);
-            track.samples[track.samples.length - 1].duration = track.samples[track.samples.length - 2].duration;
+            if (track.samples.length) {
+                track.samples[track.samples.length - 1].duration = track.samples.length > 2 ? track.samples[track.samples.length - 2].duration : 0;
+            }
+
             track.duration = track.samples.reduce((duration, sample) => sample.duration + duration, 0);
 
             var trackData = new Uint8Array(trackSize);

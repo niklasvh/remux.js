@@ -5,7 +5,7 @@ var path = require('path');
 
 var toArrayBuffer = (buffer) => new Uint8Array(buffer).buffer;
 
-var chunk = fs.readFileSync(path.resolve(__dirname, '../ts/1280x7200.ts'));
+var chunk = fs.readFileSync(path.resolve(__dirname, '../examples/hls/big_buck_bunny/1280x7200.ts'));
 var ts = new mp2t();
 ts.readBuffer(toArrayBuffer(chunk));
 

@@ -23,6 +23,7 @@
     "bluebird": "^2.9.33",
     "browserify": "10.2.4",
     "connect-browserify": "4.0.0",
+    "cors": "^2.7.1",
     "express": "4.13.0",
     "mocha": "2.2.5",
     "react": "^0.14.0-beta1",
