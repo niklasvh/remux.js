@@ -64,7 +64,8 @@ export default class HLSSource extends EventEmitter {
 
     setQuality(quality) {
         this.qualitySetting = quality;
-        this.streamId = quality === -1 ? 0 : quality
+        this.streamId = quality === -1 ? 0 : quality;
+
     }
 
     createMediaSource(playlistUrl) {
@@ -118,7 +119,7 @@ export default class HLSSource extends EventEmitter {
         this.originalSize = 0;
         this.remuxedSize = 0;
         this.streams = null;
-        this.streamId = 0;
+        this.streamId = this.qualitySetting === -1 ? 0 : this.streamId;
         this.fetching = false;
         this.ms.removeSourceBuffer(this.buffer);
         this.buffer = null;

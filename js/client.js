@@ -25621,7 +25621,7 @@ var HLSSource = (function (_EventEmitter) {
             this.originalSize = 0;
             this.remuxedSize = 0;
             this.streams = null;
-            this.streamId = 0;
+            this.streamId = this.qualitySetting === -1 ? 0 : this.streamId;
             this.fetching = false;
             this.ms.removeSourceBuffer(this.buffer);
             this.buffer = null;
@@ -26752,7 +26752,6 @@ var avcC = (function (_Box) {
             });
 
             data.writeUint8(this.ppsList.length);
-            console.log(this.spsList[0].buffer.byteLength, this.ppsList[0].buffer.byteLength);
             this.ppsList.forEach(function (ppsItem) {
                 data.writeUint16(ppsItem.buffer.byteLength);
                 data.writeBuffer(ppsItem.buffer);
