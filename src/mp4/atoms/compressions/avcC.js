@@ -33,7 +33,6 @@ export default class avcC extends Box {
         });
 
         data.writeUint8(this.ppsList.length);
-        console.log(this.spsList[0].buffer.byteLength, this.ppsList[0].buffer.byteLength);
         this.ppsList.forEach(ppsItem => {
             data.writeUint16(ppsItem.buffer.byteLength);
             data.writeBuffer(ppsItem.buffer);
