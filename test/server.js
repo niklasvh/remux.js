@@ -21,10 +21,10 @@ app.get('/js/hls.js', connectBrowserify({
 
 app.use(cors());
 
-app.use('/hls', express.static(path.resolve(__dirname, '../examples/hls')));
+app.use('/examples/hls', express.static(path.resolve(__dirname, '../examples/hls')));
 
 app.get('/', function(req, res) {
-    fs.readFile(path.resolve(__dirname, 'example.html'), 'utf-8', function(err, content) {
+    fs.readFile(path.resolve(__dirname, '../index.html'), 'utf-8', function(err, content) {
         res.send(content);
     })
 });

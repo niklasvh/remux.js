@@ -18,7 +18,7 @@ export default class App extends React.Component {
         };
     }
     componentDidMount() {
-        var playlist = '/hls/big_buck_bunny/playlist.m3u8';
+        var playlist = '/examples/hls/big_buck_bunny/playlist.m3u8';
 
         var hls = new HLSSource(playlist, () => {
             return this.refs.video;
@@ -99,8 +99,8 @@ export default class App extends React.Component {
                 {this.state.updating ? null : <video autoPlay controls ref='video'>
                     {this.state.tracks.map(track => <source key={track} src={track} />)}
                 </video>}
-                <button onClick={this.clearBuffer('/hls/big_buck_bunny/playlist.m3u8').bind(this)}>Load big buck bunny trailer</button>
-                <button onClick={this.clearBuffer('/hls/sintel/playlist.m3u8').bind(this)}>Load sintel trailer</button>
+                <button onClick={this.clearBuffer('/examples/hls/big_buck_bunny/playlist.m3u8').bind(this)}>Load big buck bunny trailer</button>
+                <button onClick={this.clearBuffer('/examples/hls/sintel/playlist.m3u8').bind(this)}>Load sintel trailer</button>
                 Quality:
                 <select onChange={this.qualityChange.bind(this)} ref="quality">
                     <option>Auto</option>

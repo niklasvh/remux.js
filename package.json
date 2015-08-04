@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node test/server",
-    "test": "mocha --compilers js:babel/register test/*_test.js"
+    "test": "mocha --compilers js:babel/register test/*_test.js",
+    "build": "browserify --outfile ./js/client.js ./"
   },
-  "browser": "./src/hls.js",
+  "browser": "./src/client.js",
   "browserify": {
     "transform": [
       [
